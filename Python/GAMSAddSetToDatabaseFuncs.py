@@ -90,6 +90,7 @@ def addNewTechsSets(db,newTechsCE):
     h2Set = addSet(db,newTechsCE['GAMS Symbol'].loc[newTechsCE['ThermalOrRenewableOrStorage']=='h2'].tolist(),'h2tech')
     ElectrolyzerSet = addSet(db, newTechsCE['GAMS Symbol'].loc[newTechsCE['PlantType'] == 'Electrolyzer'].tolist(), 'electrolyzertech')
     SMRSet = addSet(db, newTechsCE['GAMS Symbol'].loc[(newTechsCE['PlantCategory'] == 'SMR')].tolist(), 'smrtech')
+    ANRH2Set = addSet(db, newTechsCE['GAMS Symbol'].loc[(newTechsCE['PlantCategory'] == 'ANRH2')].tolist(), 'anrh2tech')
     # H2 to electricity techs:
     h2TSet = addSet(db, newTechsCE['GAMS Symbol'].loc[(newTechsCE['PlantCategory'] == 'FuelCell') | (newTechsCE['PlantCategory'] == 'H2Turbine')].tolist(), 'h2etech')
     addSet(db, newTechsCE['GAMS Symbol'].loc[(newTechsCE['PlantCategory'] == 'FuelCell')].tolist(), 'fuelcelltech')
@@ -106,7 +107,7 @@ def addNewTechsSets(db,newTechsCE):
     addSet(db,storage['GAMS Symbol'].loc[(storage['Nameplate Energy Capacity (MWh)']/storage['Capacity (MW)'] >= 30*24)].tolist(),'ltstoragetech')
     # DACS
     dacsSet = addSet(db,newTechsCE['GAMS Symbol'].loc[newTechsCE['FuelType']=='DAC'].tolist(),'dacstech')
-    return techSet, reSet, stoSet, stoSymbols, thermalSet, dacsSet, CCSSet, h2Set, SMRSet, ElectrolyzerSet, h2TSet
+    return techSet, reSet, stoSet, stoSymbols, thermalSet, dacsSet, CCSSet, h2Set, SMRSet, ElectrolyzerSet, ANRH2Set, h2TSet
 
 def addNewLineSet(db,dists):
     lineSymbols = dists['GAMS Symbol'].values
