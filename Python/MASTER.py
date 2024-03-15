@@ -65,7 +65,7 @@ def setKeyParameters():
     h2DemandScr = 'Reference'                           # Scenario for H2 demand
 
     metYear = 2012                                      # year of meteorological data used for demand and renewables
-    interconn = 'WECC'                                  # which interconnection to run - ERCOT, WECC, EI
+    interconn = 'EI'                                    # which interconnection to run - ERCOT, WECC, EI
     balAuths = 'full'                                   # full: run for all BAs in interconn. TODO: add selection of a subset of BAs.
     electrifiedDemand = True                            # whether to import electrified demand futures from NREL's EFS
     elecDemandScen = 'REFERENCE'                        # 'REFERENCE','HIGH','MEDIUM' (ref is lower than med)
@@ -76,16 +76,19 @@ def setKeyParameters():
     reDownFactor = 10                                   # downscaling factor for W&S new CFs; 1 means full resolution, 2 means half resolution, 3 is 1/3 resolution, etc
 
     # ### HYDROGEN PATHWAY
-    h2Pathway = 'blueToZero'                                            # reference: least cost solution (baseline)
+    h2Pathway = 'reference'                                            # reference: least cost solution (baseline)
                                                                         # blueToZero: blue in WY only, no green before 2035, green everywhere after 2035
                                                                         # blueToZeroWY: blue in WY only, no green before 2035, green in WY only after 2035
                                                                         # blueToZeroSR: blue in WY only, no green before 2035, green everywhere after 2035, added SR
     # ### BUILD SCENARIO
-    buildLimitsCase = 1                                                 # 1 = reference case,
+    buildLimitsCase = 6                                                 # 1 = reference case,
                                                                         # 2 = limited nuclear,
                                                                         # 3 = limited CCS and nuclear,
                                                                         # 4 = limited hydrogen storage,
                                                                         # 5 = limited transmission
+                                                                        # 6 = ANRs for electricity production
+                                                                        # 7 = ANRs for electricity and h2 production
+                                                                        # 8 = ANRs for h2 production
 
     # ### PLANNING SYSTEM SCENARIO
     emissionSystem = 'NetZero'                                          # "NetZero" = net zero,
@@ -127,7 +130,7 @@ def setKeyParameters():
     runCE, ceOps = True, 'ED'                                                   # 'ED' or 'UC' (econ disp or unit comm constraints)
     numBlocks, daysPerBlock, daysPerPeak = 4, 2, 3                              # num rep time blocks, days per rep block, and days per peak block in CE
     fullYearCE = True if (numBlocks == 1 and daysPerBlock > 300) else False     # whether running full year in CE
-    startYear, endYear, yearStepCE = 2020, 2051, 15
+    startYear, endYear, yearStepCE = 2020, 2051, 10
     mulStep = (yearStepCE*2 < (endYear - startYear))                       
 
     removeHydro = False                                 # whether to remove hydropower from fleet & subtract generation from demand, or to include hydro as dispatchable in CE w/ gen limit
@@ -171,11 +174,36 @@ def setKeyParameters():
     maxCapPerTech = {'Wind': 20000 * reDownFactor, 'Solar': 170000 * reDownFactor, 'Thermal': 999999, 'Combined Cycle': 5000000000,
                      'Storage': 100000000, 'Dac': -9999999, 'CCS': 9999999999, 'Nuclear': 9999999999, 'Battery Storage': 1000000000,
                      'Hydrogen': 100000000, 'Transmission': 100000000, 'SR':9999999999, 'Fuel Cell': 9999999999, 'H2 Turbine': 9999999999,
-                     'SMR': 9999999999, 'SMR CCS': 9999999999, 'Electrolyzer': 9999999999, 'Pipeline': 100000000}
+                     'SMR': 9999999999, 'SMR CCS': 9999999999, 'Electrolyzer': 9999999999, 'Pipeline': 100000000, 
+                     'iPWR': 0, 'HTGR': 0, 'PBR-HTGR': 0, 'iMSR': 0, 'Micro': 0,
+                     'iPWR-HTSE': 0, 'HTGR-HTSE': 0, 'PBR-HTGR-HTSE': 0, 'iMSR-HTSE': 0, 'Micro-HTSE': 0}
     if buildLimitsCase == 2: maxCapPerTech['Nuclear'] = 0
     elif buildLimitsCase == 3: maxCapPerTech['CCS'], maxCapPerTech['Nuclear'] = 0, 0
     elif buildLimitsCase == 4: maxCapPerTech['Hydrogen'] = 0
     elif buildLimitsCase == 5: maxCapPerTech['Transmission'] = 0
+    elif buildLimitsCase == 6: 
+        maxCapPerTech['iPWR'] = 9999999999
+        maxCapPerTech['HTGR'] = 9999999999
+        maxCapPerTech['PBR-HTGR'] = 9999999999
+        maxCapPerTech['iMSR'] = 9999999999
+        maxCapPerTech['Micro'] = 9999999999
+    elif buildLimitsCase == 7: 
+        maxCapPerTech['iPWR'] = 9999999999
+        maxCapPerTech['HTGR'] = 9999999999
+        maxCapPerTech['PBR-HTGR'] = 9999999999
+        maxCapPerTech['iMSR'] = 9999999999
+        maxCapPerTech['Micro'] = 9999999999
+        maxCapPerTech['iPWR-HTSE'] = 9999999999
+        maxCapPerTech['HTGR-HTSE'] = 9999999999
+        maxCapPerTech['PBR-HTGR-HTSE'] = 9999999999
+        maxCapPerTech['iMSR-HTSE'] = 9999999999
+        maxCapPerTech['Micro-HTSE'] = 9999999999
+    elif buildLimitsCase == 8: 
+        maxCapPerTech['iPWR-HTSE'] = 9999999999
+        maxCapPerTech['HTGR-HTSE'] = 9999999999
+        maxCapPerTech['PBR-HTGR-HTSE'] = 9999999999
+        maxCapPerTech['iMSR-HTSE'] = 9999999999
+        maxCapPerTech['Micro-HTSE'] = 9999999999
     if not incSR: maxCapPerTech['SR'] = 0
     
     # ### WARNINGS OR ERRORS
@@ -244,7 +272,7 @@ def masterFunction():
         rrToRegTime, rrToFlexTime, rrToContTime) = defineReserveParameters(stoMkts, stoFTLabels)
 
     # Create results directory
-    buildScen = {1: 'reference', 2: 'lNuclear', 3: 'lNuclearCCS', 4: 'lH2', 5: 'lTrans'}[buildLimitsCase]
+    buildScen = {1: 'reference', 2: 'lNuclear', 3: 'lNuclearCCS', 4: 'lH2', 5: 'lTrans', 6: 'ANRElec', 7:'ANRElecH2'}[buildLimitsCase]
     if emissionSystem == 'Negative':
         resultsDirAll = 'Results_' + interconn + '_' + emissionSystem + str(int(co2EmsCapInFinalYear/1e6)) + '_' + 'h2Pway_' + h2Pathway + '_' + buildScen + '_' + str(electrifiedDemand) + elecDemandScen
     elif emissionSystem == 'NetZero':
@@ -489,8 +517,8 @@ def createGAMSWorkspaceAndDatabase(runOnSC):
         gamsFileDir = '/nfs/turbo/seas-mtcraig/anph/BlueToZeroH2/ModelGAMS'
         gamsSysDir = '/home/anph/gams_35_1'
     else:
-        gamsFileDir = r"C:\Users\atpha\Documents\Postdocs\Projects\BlueToZeroH2\Model\GAMS"
-        gamsSysDir = r"C:\GAMS\win64\36"
+        gamsFileDir = r"C:\Users\mgarrou\Projects\Hydrogen-ANR-CEM\GAMS"# r"C:\Users\atpha\Documents\Postdocs\Projects\BlueToZeroH2\Model\GAMS"
+        gamsSysDir = r"C:\GAMS\45"#r"C:\GAMS\win64\36"
     ws = GamsWorkspace(working_directory=gamsFileDir, system_directory=gamsSysDir)
     db = ws.add_database()
     return ws, db, gamsFileDir
@@ -558,7 +586,7 @@ def ceSharedFeatures(db, peakDemandHour, genFleet, newTechs, planningReserve, di
     addPeakHourSubset(db, peakDemandHour)
     addStorageSubsets(db, genFleet, stoFTLabels)
     (techSet, renewTechSet, stoTechSet, stoTechSymbols, thermalSet, dacsSet,
-     CCSSet, h2Set, SMRSet, ElectrolyzerSet, h2TSet) = addNewTechsSets(db, newTechs)
+     CCSSet, h2Set, SMRSet, ElectrolyzerSet, ANRH2Set, h2TSet) = addNewTechsSets(db, newTechs)
 
     # Long-term planning parameters
     addPlanningReserveParam(db, planningReserve, mwToGW)
@@ -567,6 +595,9 @@ def ceSharedFeatures(db, peakDemandHour, genFleet, newTechs, planningReserve, di
     addElectrolyzerCon(db, electrolyzerCon)
     addFuelCellCon(db, fuelcellCon)
     addH2TurbineCon(db, h2TurbineCon)
+
+    # Efficiency of ANR-H2 systems
+    addANRH2Efficiency(db, newTechs, ANRH2Set)
 
     # New tech parameters
     addGenParams(db, newTechs, techSet, mwToGW, lbToShortTon, zoneOrder, True)
