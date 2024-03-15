@@ -23,6 +23,7 @@ Sets
          h2tech(tech)                       technologies that produce h2
             SMRtech(h2tech)                 SMR that produce h2
             electrolyzertech(h2tech)        Electrolyzers that produce h2
+            anrh2tech(h2tech)               ANRs that produce h2
          h2etech(tech)                      H2 turbines and fuel cell
             fuelcelltech(h2etech)           Fuel cells  
             h2turbinetech(h2etech)          H2 turbines
