@@ -166,6 +166,10 @@ def addFuelCellCon(db, fuelcellCon):
     add0dParam(db, 'pFuelCellCon', fuelcellCon)
 def addH2TurbineCon(db, h2TurbineCon):
     add0dParam(db, 'pH2TurbineCon', h2TurbineCon)
+def addANRH2Efficiency(db, df, ANRH2Set):
+    # Add effiency of ANR-H2 systems metric ton h2/Btu nuclear fuel
+    add1dParam(db, getGenParamDict(df, 'ANRH2Efficiency'), ANRH2Set, df['GAMS Symbol'], 'pANRH2Efficiency')
+    
 
 ##### ADD CE PARAMETERS FOR BLOCKS
 def addSeasonDemandWeights(db, blockWeights):
