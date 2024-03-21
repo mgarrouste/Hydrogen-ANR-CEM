@@ -65,7 +65,7 @@ def setKeyParameters():
     h2DemandScr = 'Reference'                           # Scenario for H2 demand
 
     metYear = 2012                                      # year of meteorological data used for demand and renewables
-    interconn = 'WECC'                                  # which interconnection to run - ERCOT, WECC, EI
+    interconn = 'EI'                                  # which interconnection to run - ERCOT, WECC, EI
     balAuths = 'full'                                   # full: run for all BAs in interconn. TODO: add selection of a subset of BAs.
     electrifiedDemand = True                            # whether to import electrified demand futures from NREL's EFS
     elecDemandScen = 'REFERENCE'                        # 'REFERENCE','HIGH','MEDIUM' (ref is lower than med)
@@ -76,7 +76,7 @@ def setKeyParameters():
     reDownFactor = 10                                   # downscaling factor for W&S new CFs; 1 means full resolution, 2 means half resolution, 3 is 1/3 resolution, etc
 
     # ### HYDROGEN PATHWAY
-    h2Pathway = 'blueToZero'                                            # reference: least cost solution (baseline)
+    h2Pathway = 'reference'                                            # reference: least cost solution (baseline)
                                                                         # blueToZero: blue in WY only, no green before 2035, green everywhere after 2035
                                                                         # blueToZeroWY: blue in WY only, no green before 2035, green in WY only after 2035
                                                                         # blueToZeroSR: blue in WY only, no green before 2035, green everywhere after 2035, added SR
@@ -86,6 +86,7 @@ def setKeyParameters():
                                                                         # 3 = limited CCS and nuclear,
                                                                         # 4 = limited hydrogen storage,
                                                                         # 5 = limited transmission
+                                                                        # 6 = with ANR for electricity production
 
     # ### PLANNING SYSTEM SCENARIO
     emissionSystem = 'NetZero'                                          # "NetZero" = net zero,
@@ -125,7 +126,7 @@ def setKeyParameters():
 
     # ### CE OPTIONS
     runCE, ceOps = True, 'ED'                                                   # 'ED' or 'UC' (econ disp or unit comm constraints)
-    numBlocks, daysPerBlock, daysPerPeak = 4, 2, 3                              # num rep time blocks, days per rep block, and days per peak block in CE
+    numBlocks, daysPerBlock, daysPerPeak = 2, 2, 3                              # num rep time blocks, days per rep block, and days per peak block in CE
     fullYearCE = True if (numBlocks == 1 and daysPerBlock > 300) else False     # whether running full year in CE
     startYear, endYear, yearStepCE = 2020, 2051, 15
     mulStep = (yearStepCE*2 < (endYear - startYear))                       
@@ -171,11 +172,18 @@ def setKeyParameters():
     maxCapPerTech = {'Wind': 20000 * reDownFactor, 'Solar': 170000 * reDownFactor, 'Thermal': 999999, 'Combined Cycle': 5000000000,
                      'Storage': 100000000, 'Dac': -9999999, 'CCS': 9999999999, 'Nuclear': 9999999999, 'Battery Storage': 1000000000,
                      'Hydrogen': 100000000, 'Transmission': 100000000, 'SR':9999999999, 'Fuel Cell': 9999999999, 'H2 Turbine': 9999999999,
-                     'SMR': 9999999999, 'SMR CCS': 9999999999, 'Electrolyzer': 9999999999, 'Pipeline': 100000000}
+                     'SMR': 9999999999, 'SMR CCS': 9999999999, 'Electrolyzer': 9999999999, 'Pipeline': 100000000,
+                     'iPWR':0, 'HTGR':0, 'PBRHTGR':0, 'iMSR':0, 'Micro':0 }
     if buildLimitsCase == 2: maxCapPerTech['Nuclear'] = 0
     elif buildLimitsCase == 3: maxCapPerTech['CCS'], maxCapPerTech['Nuclear'] = 0, 0
     elif buildLimitsCase == 4: maxCapPerTech['Hydrogen'] = 0
     elif buildLimitsCase == 5: maxCapPerTech['Transmission'] = 0
+    elif buildLimitsCase == 6:
+        maxCapPerTech['iPWR'] = 9999999999
+        maxCapPerTech['HTGR'] = 9999999999
+        maxCapPerTech['PBRHTGR'] = 9999999999
+        maxCapPerTech['iMSR'] = 9999999999
+        maxCapPerTech['Micro'] = 9999999999
     if not incSR: maxCapPerTech['SR'] = 0
     
     # ### WARNINGS OR ERRORS
