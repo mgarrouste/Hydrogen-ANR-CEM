@@ -81,7 +81,7 @@ def setKeyParameters():
                                                                         # blueToZeroWY: blue in WY only, no green before 2035, green in WY only after 2035
                                                                         # blueToZeroSR: blue in WY only, no green before 2035, green everywhere after 2035, added SR
     # ### BUILD SCENARIO
-    buildLimitsCase = 1                                                 # 1 = reference case,
+    buildLimitsCase = 6                                                 # 1 = reference case,
                                                                         # 2 = limited nuclear,
                                                                         # 3 = limited CCS and nuclear,
                                                                         # 4 = limited hydrogen storage,
@@ -252,7 +252,7 @@ def masterFunction():
         rrToRegTime, rrToFlexTime, rrToContTime) = defineReserveParameters(stoMkts, stoFTLabels)
 
     # Create results directory
-    buildScen = {1: 'reference', 2: 'lNuclear', 3: 'lNuclearCCS', 4: 'lH2', 5: 'lTrans'}[buildLimitsCase]
+    buildScen = {1: 'reference', 2: 'lNuclear', 3: 'lNuclearCCS', 4: 'lH2', 5: 'lTrans', 6:'ANRElec'}[buildLimitsCase]
     if emissionSystem == 'Negative':
         resultsDirAll = 'Results_' + interconn + '_' + emissionSystem + str(int(co2EmsCapInFinalYear/1e6)) + '_' + 'h2Pway_' + h2Pathway + '_' + buildScen + '_' + str(electrifiedDemand) + elecDemandScen
     elif emissionSystem == 'NetZero':
