@@ -128,7 +128,7 @@ def setKeyParameters():
     runCE, ceOps = True, 'ED'                                                   # 'ED' or 'UC' (econ disp or unit comm constraints)
     numBlocks, daysPerBlock, daysPerPeak = 2, 2, 3                              # num rep time blocks, days per rep block, and days per peak block in CE
     fullYearCE = True if (numBlocks == 1 and daysPerBlock > 300) else False     # whether running full year in CE
-    startYear, endYear, yearStepCE = 2020, 2051, 15
+    startYear, endYear, yearStepCE = 2020, 2051, 10
     mulStep = (yearStepCE*2 < (endYear - startYear))                       
 
     removeHydro = False                                 # whether to remove hydropower from fleet & subtract generation from demand, or to include hydro as dispatchable in CE w/ gen limit
@@ -497,8 +497,8 @@ def createGAMSWorkspaceAndDatabase(runOnSC):
         gamsFileDir = '/nfs/turbo/seas-mtcraig/anph/BlueToZeroH2/ModelGAMS'
         gamsSysDir = '/home/anph/gams_35_1'
     else:
-        gamsFileDir = r"C:\Users\atpha\Documents\Postdocs\Projects\BlueToZeroH2\Model\GAMS"
-        gamsSysDir = r"C:\GAMS\win64\36"
+        gamsFileDir =r"C:\Users\mgarrou\Projects\Hydrogen-ANR-CEM\GAMS"
+        gamsSysDir = r"C:\GAMS\45"
     ws = GamsWorkspace(working_directory=gamsFileDir, system_directory=gamsSysDir)
     db = ws.add_database()
     return ws, db, gamsFileDir
