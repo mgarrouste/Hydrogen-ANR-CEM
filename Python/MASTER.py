@@ -81,7 +81,7 @@ def setKeyParameters():
                                                                         # blueToZeroWY: blue in WY only, no green before 2035, green in WY only after 2035
                                                                         # blueToZeroSR: blue in WY only, no green before 2035, green everywhere after 2035, added SR
     # ### BUILD SCENARIO
-    buildLimitsCase = 6                                                 # 1 = reference case,
+    buildLimitsCase = 6                                                # 1 = reference case,
                                                                         # 2 = limited nuclear,
                                                                         # 3 = limited CCS and nuclear,
                                                                         # 4 = limited hydrogen storage,
@@ -128,7 +128,7 @@ def setKeyParameters():
 
     # ### CE OPTIONS
     runCE, ceOps = True, 'ED'                                                   # 'ED' or 'UC' (econ disp or unit comm constraints)
-    numBlocks, daysPerBlock, daysPerPeak = 4, 2, 3                              # num rep time blocks, days per rep block, and days per peak block in CE
+    numBlocks, daysPerBlock, daysPerPeak = 1, 1, 1                              # num rep time blocks, days per rep block, and days per peak block in CE PREVIOUSLY 4,2,3 set to 1,1,1 for debug speed
     fullYearCE = True if (numBlocks == 1 and daysPerBlock > 300) else False     # whether running full year in CE
     startYear, endYear, yearStepCE = 2020, 2051, 10
     mulStep = (yearStepCE*2 < (endYear - startYear))                       
@@ -175,8 +175,8 @@ def setKeyParameters():
                      'Storage': 100000000, 'Dac': -9999999, 'CCS': 9999999999, 'Nuclear': 9999999999, 'Battery Storage': 1000000000,
                      'Hydrogen': 100000000, 'Transmission': 100000000, 'SR':9999999999, 'Fuel Cell': 9999999999, 'H2 Turbine': 9999999999,
                      'SMR': 9999999999, 'SMR CCS': 9999999999, 'Electrolyzer': 9999999999, 'Pipeline': 100000000, 
-                     'iPWR': 0, 'HTGR': 0, 'PBR-HTGR': 0, 'iMSR': 0, 'Micro': 0,
-                     'iPWR-HTSE': 0, 'HTGR-HTSE': 0, 'PBR-HTGR-HTSE': 0, 'iMSR-HTSE': 0, 'Micro-HTSE': 0}
+                     'iPWR': 0, 'HTGR': 0, 'PBRHTGR': 0, 'iMSR': 0, 'Micro': 0,
+                     'iPWRHTSE': 0, 'HTGRHTSE': 0, 'PBRHTGRHTSE': 0, 'iMSRHTSE': 0, 'MicroHTSE': 0}
     if buildLimitsCase == 2: maxCapPerTech['Nuclear'] = 0
     elif buildLimitsCase == 3: maxCapPerTech['CCS'], maxCapPerTech['Nuclear'] = 0, 0
     elif buildLimitsCase == 4: maxCapPerTech['Hydrogen'] = 0
@@ -184,26 +184,26 @@ def setKeyParameters():
     elif buildLimitsCase == 6: 
         maxCapPerTech['iPWR'] = 9999999999
         maxCapPerTech['HTGR'] = 9999999999
-        maxCapPerTech['PBR-HTGR'] = 9999999999
+        maxCapPerTech['PBRHTGR'] = 9999999999
         maxCapPerTech['iMSR'] = 9999999999
         maxCapPerTech['Micro'] = 9999999999
     elif buildLimitsCase == 7: 
         maxCapPerTech['iPWR'] = 9999999999
         maxCapPerTech['HTGR'] = 9999999999
-        maxCapPerTech['PBR-HTGR'] = 9999999999
+        maxCapPerTech['PBRHTGR'] = 9999999999
         maxCapPerTech['iMSR'] = 9999999999
         maxCapPerTech['Micro'] = 9999999999
-        maxCapPerTech['iPWR-HTSE'] = 9999999999
-        maxCapPerTech['HTGR-HTSE'] = 9999999999
-        maxCapPerTech['PBR-HTGR-HTSE'] = 9999999999
-        maxCapPerTech['iMSR-HTSE'] = 9999999999
-        maxCapPerTech['Micro-HTSE'] = 9999999999
+        maxCapPerTech['iPWRHTSE'] = 9999999999
+        maxCapPerTech['HTGRHTSE'] = 9999999999
+        maxCapPerTech['PBRHTGRHTSE'] = 9999999999
+        maxCapPerTech['iMSRHTSE'] = 9999999999
+        maxCapPerTech['MicroHTSE'] = 9999999999
     elif buildLimitsCase == 8: 
-        maxCapPerTech['iPWR-HTSE'] = 9999999999
-        maxCapPerTech['HTGR-HTSE'] = 9999999999
-        maxCapPerTech['PBR-HTGR-HTSE'] = 9999999999
-        maxCapPerTech['iMSR-HTSE'] = 9999999999
-        maxCapPerTech['Micro-HTSE'] = 9999999999
+        maxCapPerTech['iPWRHTSE'] = 9999999999
+        maxCapPerTech['HTGRHTSE'] = 9999999999
+        maxCapPerTech['PBRHTGRHTSE'] = 9999999999
+        maxCapPerTech['iMSRHTSE'] = 9999999999
+        maxCapPerTech['MicroHTSE'] = 9999999999
     if not incSR: maxCapPerTech['SR'] = 0
     
     # ### WARNINGS OR ERRORS
@@ -272,7 +272,7 @@ def masterFunction():
         rrToRegTime, rrToFlexTime, rrToContTime) = defineReserveParameters(stoMkts, stoFTLabels)
 
     # Create results directory
-    buildScen = {1: 'reference', 2: 'lNuclear', 3: 'lNuclearCCS', 4: 'lH2', 5: 'lTrans', 6: 'ANRElec', 7:'ANRElecH2'}[buildLimitsCase]
+    buildScen = {1: 'reference', 2: 'lNuclear', 3: 'lNuclearCCS', 4: 'lH2', 5: 'lTrans', 6: 'ANRElec', 7:'ANRElecH2', 8:'ANRH2'}[buildLimitsCase]
     if emissionSystem == 'Negative':
         resultsDirAll = 'Results_' + interconn + '_' + emissionSystem + str(int(co2EmsCapInFinalYear/1e6)) + '_' + 'h2Pway_' + h2Pathway + '_' + buildScen + '_' + str(electrifiedDemand) + elecDemandScen
     elif emissionSystem == 'NetZero':
@@ -587,6 +587,7 @@ def ceSharedFeatures(db, peakDemandHour, genFleet, newTechs, planningReserve, di
     addStorageSubsets(db, genFleet, stoFTLabels)
     (techSet, renewTechSet, stoTechSet, stoTechSymbols, thermalSet, dacsSet,
      CCSSet, h2Set, SMRSet, ElectrolyzerSet, ANRH2Set, h2TSet) = addNewTechsSets(db, newTechs)
+    print('Added new technologies to the GAMS database')
 
     # Long-term planning parameters
     addPlanningReserveParam(db, planningReserve, mwToGW)
@@ -596,14 +597,11 @@ def ceSharedFeatures(db, peakDemandHour, genFleet, newTechs, planningReserve, di
     addFuelCellCon(db, fuelcellCon)
     addH2TurbineCon(db, h2TurbineCon)
 
-    # Efficiency of ANR-H2 systems
-    addANRH2Efficiency(db, newTechs, ANRH2Set)
-
     # New tech parameters
     addGenParams(db, newTechs, techSet, mwToGW, lbToShortTon, zoneOrder, True)
     addTechCostParams(db, newTechs, coOptH2, techSet, stoTechSet, mwToGW)
     addRenewTechCFParams(db, renewTechSet, hourSet, newCfs)
-    addMaxNewBuilds(db, newTechs, thermalSet, stoTechSet, dacsSet, CCSSet, maxCapPerTech, coOptH2, h2Pathway, SMRSet, ElectrolyzerSet, currYear, mwToGW)
+    addMaxNewBuilds(db, newTechs, thermalSet, stoTechSet, dacsSet, CCSSet, maxCapPerTech, coOptH2, h2Pathway, SMRSet, ElectrolyzerSet, ANRH2Set, currYear, mwToGW)
     if ceOps == 'UC': addGenUCParams(db, newTechs, techSet, mwToGW, True)
     addResIncParams(db, regUpInc, flexInc, renewTechSet, hourSet)
     addSpinReserveEligibility(db, newTechs, techSet, True)

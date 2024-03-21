@@ -119,7 +119,7 @@ Parameters
 $if not set gdxincname $abort 'no include file name for data file provided'
 $gdxin %gdxincname%
 $load ststorageegu, ltstorageegu, tech, dacstech, thermaltech, CCStech, nucleartech, srtech, CCtech, renewtech, solartech, windtech, storagetech, ststoragetech, ltstoragetech, peakH
-$load h2tech, electrolyzertech, smrtech, h2etech, fuelcelltech, h2turbinetech
+$load h2tech, electrolyzertech, smrtech, h2etech, fuelcelltech, h2turbinetech, anrh2tech
 $load pNMaxWind, pNMaxSolar, pNMaxNuclear, pNMaxSR, pNMaxCC, pNMaxCCS, pNMaxDACS, pPMaxSto, pEMaxSto, pCapactech, pHrtech, pOpcosttech
 $load pNMaxSMR, pNMaxElectrolyzer, pNMaxFuelcell, PNMaxH2Turbine
 $load pNMaxH2Line, pH2Lifeline, pH2Linecost
