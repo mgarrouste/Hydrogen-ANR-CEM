@@ -166,9 +166,6 @@ def addFuelCellCon(db, fuelcellCon):
     add0dParam(db, 'pFuelCellCon', fuelcellCon)
 def addH2TurbineCon(db, h2TurbineCon):
     add0dParam(db, 'pH2TurbineCon', h2TurbineCon)
-def addANRH2Efficiency(db, df, ANRH2Set):
-    # Add effiency of ANR-H2 systems metric ton h2/Btu nuclear fuel
-    add1dParam(db, getGenParamDict(df, 'ANRH2Efficiency'), ANRH2Set, df['GAMS Symbol'], 'pANRH2Efficiency')
     
 
 ##### ADD CE PARAMETERS FOR BLOCKS
@@ -181,7 +178,7 @@ def addBlockSOCScalars(db, scalars):
         add0dParam(db, 'pSOCScalar' + createHourSubsetName(block), scalars[block])
 
 ##### ADD LIMIT ON MAX NUMBER OF NEW BUILDS PER TECH (#)
-def addMaxNewBuilds(db, df, thermalSet, stoTechSet, dacsSet, CCSSet, maxCapPerTech, coOptH2, h2Pathway, SMRSet, ElectrolyzerSet, currYear, mwToGW):
+def addMaxNewBuilds(db, df, thermalSet, stoTechSet, dacsSet, CCSSet, maxCapPerTech, coOptH2, h2Pathway, SMRSet, ElectrolyzerSet, ANRH2Set, currYear, mwToGW):
     # Wind & solar
     for pt in ['Wind','Solar']:
         genCaps = df.loc[df['FuelType']==pt.capitalize(),'Capacity (MW)']
@@ -237,6 +234,17 @@ def addMaxNewBuilds(db, df, thermalSet, stoTechSet, dacsSet, CCSSet, maxCapPerTe
             if math.isinf(value):
                 maxBuilds[key] = 0
         add1dParam(db, maxBuilds, SMRSet, techs['GAMS Symbol'], 'pNMaxSMR')
+
+        """pt = 'iPWRHTSE'
+        if h2Pathway != 'reference':
+            df.loc[(df['PlantCategory'] == pt) & (df['region'] != 'WY'), 'Capacity (MW)'] = 0
+        techs = df.loc[(df['PlantCategory'] == pt)]
+        techs.index = techs['GAMS Symbol']
+        maxBuilds = np.ceil(maxCapPerTech[pt] / techs['Capacity (MW)']).to_dict()
+        for key, value in maxBuilds.items():
+            if math.isinf(value):
+                maxBuilds[key] = 0
+        add1dParam(db, maxBuilds, ANRH2Set, techs['GAMS Symbol'], 'pNMaxiPWRHTSE')"""
 
         # Electrolyzer
         pt = 'Electrolyzer'
