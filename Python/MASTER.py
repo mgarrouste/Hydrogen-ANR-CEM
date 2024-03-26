@@ -87,6 +87,7 @@ def setKeyParameters():
                                                                         # 4 = limited hydrogen storage,
                                                                         # 5 = limited transmission
                                                                         # 6 = with ANR for electricity production
+                                                                        # 7 = with ANR for h2 and elec production
 
     # ### PLANNING SYSTEM SCENARIO
     emissionSystem = 'NetZero'                                          # "NetZero" = net zero,
@@ -173,7 +174,8 @@ def setKeyParameters():
                      'Storage': 100000000, 'Dac': -9999999, 'CCS': 9999999999, 'Nuclear': 9999999999, 'Battery Storage': 1000000000,
                      'Hydrogen': 100000000, 'Transmission': 100000000, 'SR':9999999999, 'Fuel Cell': 9999999999, 'H2 Turbine': 9999999999,
                      'SMR': 9999999999, 'SMR CCS': 9999999999, 'Electrolyzer': 9999999999, 'Pipeline': 100000000,
-                     'iPWR':0, 'HTGR':0, 'PBRHTGR':0, 'iMSR':0, 'Micro':0 }
+                     'iPWR':0, 'HTGR':0, 'PBRHTGR':0, 'iMSR':0, 'Micro':0,
+                     'iPWRHTSE':0, 'HTGRHTSE':0, 'PBRHTGRHTSE':0, 'iMSRHTSE':0, 'MicroHTSE':0 }
     if buildLimitsCase == 2: maxCapPerTech['Nuclear'] = 0
     elif buildLimitsCase == 3: maxCapPerTech['CCS'], maxCapPerTech['Nuclear'] = 0, 0
     elif buildLimitsCase == 4: maxCapPerTech['Hydrogen'] = 0
@@ -184,6 +186,17 @@ def setKeyParameters():
         maxCapPerTech['PBRHTGR'] = 9999999999
         maxCapPerTech['iMSR'] = 9999999999
         maxCapPerTech['Micro'] = 9999999999
+    elif buildLimitsCase == 7:
+        maxCapPerTech['iPWR'] = 9999999999
+        maxCapPerTech['HTGR'] = 9999999999
+        maxCapPerTech['PBRHTGR'] = 9999999999
+        maxCapPerTech['iMSR'] = 9999999999
+        maxCapPerTech['Micro'] = 9999999999
+        maxCapPerTech['iPWRHTSE'] = 9999999999
+        maxCapPerTech['HTGRHTSE'] = 9999999999
+        maxCapPerTech['PBRHTGRHTSE'] = 9999999999
+        maxCapPerTech['iMSRHTSE'] = 9999999999
+        maxCapPerTech['MicroHTSE'] = 9999999999
     if not incSR: maxCapPerTech['SR'] = 0
     
     # ### WARNINGS OR ERRORS
@@ -252,7 +265,7 @@ def masterFunction():
         rrToRegTime, rrToFlexTime, rrToContTime) = defineReserveParameters(stoMkts, stoFTLabels)
 
     # Create results directory
-    buildScen = {1: 'reference', 2: 'lNuclear', 3: 'lNuclearCCS', 4: 'lH2', 5: 'lTrans', 6:'ANRElec'}[buildLimitsCase]
+    buildScen = {1: 'reference', 2: 'lNuclear', 3: 'lNuclearCCS', 4: 'lH2', 5: 'lTrans', 6:'ANRElec', 7:'ANRElecH2'}[buildLimitsCase]
     if emissionSystem == 'Negative':
         resultsDirAll = 'Results_' + interconn + '_' + emissionSystem + str(int(co2EmsCapInFinalYear/1e6)) + '_' + 'h2Pway_' + h2Pathway + '_' + buildScen + '_' + str(electrifiedDemand) + elecDemandScen
     elif emissionSystem == 'NetZero':
