@@ -41,14 +41,14 @@ def create_region_column(vN_df, interconnection):
   return vN_df
    
 
-def condense_generators(df):
+def condense_generators(df, column='Capacity'):
   # Mark solar and wind generators with a common name
   df['Generator'] = df['Generator'].apply(lambda x: 'Solar' if 'solar' in x.lower() else x)
   df['Generator'] = df['Generator'].apply(lambda x: 'Wind' if 'wind' in x.lower() else x)
   # Drop lines if capacity == 0 
-  df = df[df['Capacity'] != 0]
+  df = df[df[column] != 0]
   # Now, group by ISO and generator_name and sum the capacities
-  df = df.groupby(['region', 'Generator', 'Year'], as_index=False)['Capacity'].sum()
+  df = df.groupby(['region', 'Generator', 'Year'], as_index=False)[column].sum()
   return df
 
 
