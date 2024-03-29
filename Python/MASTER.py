@@ -318,7 +318,7 @@ def masterFunction():
                                                                 lineLimits, H2lineLimits, lineDists, lineCosts, contFlexInelig, buildLimitsCase, emissionSystem,
                                                                 planNESystem, co2EmsCapInFinalYear, electrifiedDemand, elecDemandScen, reSourceMERRA, 
                                                                 stoFTLabels, transmissionEff, removeHydro, h2AnnualDemand, coOptH2,
-                                                                electrolyzerCon, fuelcellCon, h2TurbineCon, h2Pathway)
+                                                                electrolyzerCon, fuelcellCon, h2TurbineCon, h2Pathway, buildScen)
 
         # Run dispatch
         if (ucOrED != 'None') and ((currYear == startYear and runFirstYear) or (currYear > startYear)):
@@ -380,7 +380,7 @@ def runCapacityExpansion(genFleet, demand, startYear, currYear, planningReserveM
                          ceOps, stoMkts, initSOCFraction, includeRes, reDownFactor, incNuc, demandShifter, demandShiftingBlock, runOnSC,
                          interconn, yearIncDACS, transRegions, pRegionShapes, lineLimits, H2lineLimits, lineDists, lineCosts, contFlexInelig,
                          buildLimitsCase, emissionSystem, planNESystem, co2EmsCapInFinalYear, electrifiedDemand, elecDemandScen, reSourceMERRA, 
-                         stoFTLabels, transmissionEff, removeHydro, h2AnnualDemand, coOptH2, electrolyzerCon, fuelcellCon, h2TurbineCon, h2Pathway):
+                         stoFTLabels, transmissionEff, removeHydro, h2AnnualDemand, coOptH2, electrolyzerCon, fuelcellCon, h2TurbineCon, h2Pathway, buildScen):
     # Create results directory
     resultsDir = os.path.join(resultsDirOrig, 'CE')
     if not os.path.exists(resultsDir): os.makedirs(resultsDir)
@@ -392,7 +392,7 @@ def runCapacityExpansion(genFleet, demand, startYear, currYear, planningReserveM
     # Update new technology and fuel price data
     write2dListToCSV([[currCo2Cap]], os.path.join(resultsDir, 'co2CapCE' + str(currYear) + '.csv'))
     newTechsCE = getNewTechs(regElig, regCostFrac, currYear, incITC, stoInCE, seasStoInCE,
-                             fuelPrices, yearIncDACS, coOptH2, incNuc, transRegions, contFlexInelig)
+                             fuelPrices, yearIncDACS, coOptH2, incNuc, transRegions, contFlexInelig, buildScen)
     genFleet = updateFuelPricesAndCosts(genFleet, currYear, fuelPrices, regCostFrac)
 
     # Retire units and create fleet for current CE loop
