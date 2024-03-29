@@ -34,6 +34,9 @@ def getNewTechs(regElig, regCostFrac, currYear, incITC, stoInCE, seasStoInCE, fu
     if not seasStoInCE: newTechsCE = newTechsCE.loc[newTechsCE['PlantType'] != 'Hydrogen']
     if not incNuc: newTechsCE = newTechsCE.loc[newTechsCE['PlantType'] != 'Nuclear']
     if currYear < firstYearForCCS: newTechsCE = newTechsCE.loc[~newTechsCE['PlantType'].str.contains('CCS')]
+    # Include ITC
+    if incITC:
+        newTechsCE = modRECapCostForITC(newTechsCE, currYear)
     # Assign tech options to each region
     newTechsCE = repeatNonRETechOptionsForEachRegion(newTechsCE, transRegions)
     newTechsCE.reset_index(inplace=True, drop=True)
@@ -94,19 +97,33 @@ def repeatNonRETechOptionsForEachRegion(newTechsCE, transRegions):
         l.append(regionTechs)
     return pd.concat(l)
 
-########## OLD ######################
 # Account for ITC in RE cap costs
 # http://programs.dsireusa.org/system/program/detail/658
 def modRECapCostForITC(newTechsCE, currYear):
+    """Modifying capital costs to include ITC after implementation year
+    Args:
+        - newTechsCE (DataFrame): new technologies data
+        - currYear (int): year considered
+    Returns:
+        - newTechsCE (DataFrame): new technologies data with ITC applied to relevant capital costs
+    """
     if currYear > 2050: currYear = 2050
     windItc, windItcYear = .21, 2020  # wind ITC expires at 2020; .21 is average of 2016-2019 ITCs
     solarItcInit, solarItcIndef, solarItcYear = .3, .1, 2020  # solar ITC doesn't expire, but goes from .3 to .1
+    anrh2Itc, anrh2ItcYear = 0.3, 2100 # ITC for ANR-H2 does not expire
+    anrItc, anrItcYear = 0.3, 2100 # ITC for ANRs does not expire
     if currYear <= windItcYear: modRECost(newTechsCE, windItc, 'Wind')
     if currYear <= solarItcYear: modRECost(newTechsCE, solarItcInit, 'Solar PV')
     else: modRECost(newTechsCE, solarItcIndef, 'Solar PV')
+    if currYear <= anrh2ItcYear: 
+        for plantType in ['iPWRHTSE', 'HTGRHTSE', 'PBRHTGRHTSE', 'iMSRHTSE', 'MicroHTSE']:
+            modRECost(newTechsCE, anrh2Itc, plantType)
+    if currYear <= anrItcYear:
+        for plantType in ['iPWR', 'HTGR', 'PBRHTGR', 'iMSR', 'Micro']:
+            modRECost(newTechsCE, anrItc, plantType)
+    return newTechsCE
     
 def modRECost(newTechsCE, itc, plantType):
-    ptCol = newTechsCE[0].index('PlantType')
-    capexCol = newTechsCE[0].index('CAPEX(2012$/MW)')
-    ptRow = [row[0] for row in newTechsCE].index(plantType)
-    newTechsCE[ptRow][capexCol] *= (1-itc)
+    newTechsCE = newTechsCE.set_index('PlantType')
+    newTechsCE.loc[plantType, 'CAPEX(2012$/MW)'] *=(1-itc)
+    newTechsCE.reset_index(inplace=True)

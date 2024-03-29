@@ -127,7 +127,7 @@ def setKeyParameters():
 
     # ### CE OPTIONS
     runCE, ceOps = True, 'ED'                                                   # 'ED' or 'UC' (econ disp or unit comm constraints)
-    numBlocks, daysPerBlock, daysPerPeak = 2, 2, 3                              # num rep time blocks, days per rep block, and days per peak block in CE
+    numBlocks, daysPerBlock, daysPerPeak = 2, 2, 2                              # num rep time blocks, days per rep block, and days per peak block in CE
     fullYearCE = True if (numBlocks == 1 and daysPerBlock > 300) else False     # whether running full year in CE
     startYear, endYear, yearStepCE = 2020, 2051, 10
     mulStep = (yearStepCE*2 < (endYear - startYear))                       
@@ -141,7 +141,7 @@ def setKeyParameters():
     retirementCFCutoff = .3                             # retire units w/ CF lower than given value
     discountRate = 0.07                                 # fraction
     ptEligRetCF = ['Coal Steam']                        # which plant types retire based on capacity factor (economics)
-    incITC, incNuc, incSR = False, True, False          # include Investment Tax Credit or not;
+    incITC, incNuc, incSR = True, True, False          # include Investment Tax Credit or not;
                                                         # include nuclear as new investment option or not;
                                                         # include small modular reactors (SR) or not
     if h2Pathway == 'blueToZeroSR': incSR = True
@@ -510,7 +510,7 @@ def createGAMSWorkspaceAndDatabase(runOnSC):
         gamsFileDir = '/nfs/turbo/seas-mtcraig/anph/BlueToZeroH2/ModelGAMS'
         gamsSysDir = '/home/anph/gams_35_1'
     else:
-        gamsFileDir =r"C:\Users\mgarrou\Projects\Hydrogen-ANR-CEM\GAMS"
+        gamsFileDir =r"C:\Users\mgarrou\Projects\Blue-to-Zero-H2\GAMS"
         gamsSysDir = r"C:\GAMS\45"
     ws = GamsWorkspace(working_directory=gamsFileDir, system_directory=gamsSysDir)
     db = ws.add_database()
