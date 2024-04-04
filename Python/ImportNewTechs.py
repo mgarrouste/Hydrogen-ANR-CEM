@@ -20,7 +20,7 @@ def getNewTechs(regElig, regCostFrac, currYear, incITC, stoInCE, seasStoInCE, fu
             newTechsCE = pd.read_excel(os.path.join('Data', 'NewPlantData', 'NewTechFramework_ANRElecH2.xlsx'))
         else:
             newTechsCE = pd.read_excel(os.path.join('Data', 'NewPlantData', 'NewTechFramework.xlsx'))
-    newTechsCE = inputValuesForCurrentYear(newTechsCE, 'Data\\NewPlantData', currYear)
+    newTechsCE = inputValuesForCurrentYear(newTechsCE, os.path.join('Data','NewPlantData'), currYear)
     newTechsCE = addUnitCommitmentParameters(newTechsCE, 'PhorumUCParameters.csv')
     newTechsCE = addUnitCommitmentParameters(newTechsCE, 'StorageUCParameters.csv')
     newTechsCE = addFuelPrices(newTechsCE, currYear, fuelPrices)
