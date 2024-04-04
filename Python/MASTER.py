@@ -62,7 +62,8 @@ def setKeyParameters():
 
     #### STUDY AREA AND METEOROLOGICAL-DEPENDENT DATA
     coOptH2 = True                                      # Couple H2
-    h2DemandScr = 'Reference'                           # Scenario for H2 demand
+    h2DemandScr = 'Reference'                           # Scenario for H2 demand: 'Reference', 'Current R&D', 'Improved Electrolysis', 'Low Cost Electrolysis'
+                                                        # 'Low NG Resource', 
 
     metYear = 2012                                      # year of meteorological data used for demand and renewables
     interconn = 'EI'                                  # which interconnection to run - ERCOT, WECC, EI
@@ -81,7 +82,7 @@ def setKeyParameters():
                                                                         # blueToZeroWY: blue in WY only, no green before 2035, green in WY only after 2035
                                                                         # blueToZeroSR: blue in WY only, no green before 2035, green everywhere after 2035, added SR
     # ### BUILD SCENARIO
-    buildLimitsCase = 6                                                 # 1 = reference case,
+    buildLimitsCase = 1                                                 # 1 = reference case,
                                                                         # 2 = limited nuclear,
                                                                         # 3 = limited CCS and nuclear,
                                                                         # 4 = limited hydrogen storage,
@@ -127,7 +128,7 @@ def setKeyParameters():
 
     # ### CE OPTIONS
     runCE, ceOps = True, 'ED'                                                   # 'ED' or 'UC' (econ disp or unit comm constraints)
-    numBlocks, daysPerBlock, daysPerPeak = 2, 2, 2                              # num rep time blocks, days per rep block, and days per peak block in CE
+    numBlocks, daysPerBlock, daysPerPeak = 4, 3, 1                              # num rep time blocks, days per rep block, and days per peak block in CE
     fullYearCE = True if (numBlocks == 1 and daysPerBlock > 300) else False     # whether running full year in CE
     startYear, endYear, yearStepCE = 2020, 2051, 10
     mulStep = (yearStepCE*2 < (endYear - startYear))                       
@@ -507,8 +508,8 @@ def runCapacityExpansion(genFleet, demand, startYear, currYear, planningReserveM
 def createGAMSWorkspaceAndDatabase(runOnSC):
     # currDir = os.getcwd()
     if runOnSC:
-        gamsFileDir = '/nfs/turbo/seas-mtcraig/anph/BlueToZeroH2/ModelGAMS'
-        gamsSysDir = '/home/anph/gams_35_1'
+        gamsFileDir = '/home/mgarrou/Projects/Blue-to-Zero-H2/GAMS'
+        gamsSysDir = '/home/mgarrou/gams40.4_linux_x64_64_sfx'
     else:
         gamsFileDir =r"C:\Users\mgarrou\Projects\Blue-to-Zero-H2\GAMS"
         gamsSysDir = r"C:\GAMS\45"
